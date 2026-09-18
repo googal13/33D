@@ -299,11 +299,11 @@
     <div class="option">
       <label>VIDEO STYLE</label>
       <select id="style">
-        <option>Cinematic</option>
-        <option>Realistic</option>
-        <option>Anime</option>
-        <option>3D Animation</option>
-        <option>Documentary</option>
+        <option value="Cinematic">Cinematic</option>
+        <option value="Realistic">Realistic</option>
+        <option value="Anime">Anime</option>
+        <option value="3D Animation">3D Animation</option>
+        <option value="Documentary">Documentary</option>
       </select>
     </div>
 
@@ -320,9 +320,9 @@
     <div class="option">
       <label>QUALITY</label>
       <select id="quality">
-        <option>HD</option>
-        <option>Full HD</option>
-        <option>4K</option>
+        <option value="HD">HD</option>
+        <option value="Full HD">Full HD</option>
+        <option value="4K">4K</option>
       </select>
     </div>
 
@@ -385,6 +385,7 @@ function selectTab(button) {
 async function generateVideo() {
   const promptText = document.getElementById('prompt').value.trim();
   const style = document.getElementById('style').value;
+  const aspectRatio = document.getElementById('aspectRatio').value;
   const result = document.getElementById('result');
 
   if (!promptText) {
@@ -394,18 +395,29 @@ async function generateVideo() {
   }
 
   result.style.display = "block";
-  result.innerHTML = "<p style='color:#b995ff;'>⏳ Generating video, please wait...</p>";
+  result.innerHTML = "<p style='color:#b995ff;'>⏳ Generating video request, please wait...</p>";
 
   const API_KEY = "AQ.Ab8RN6LMVyJUAI74OT9kWtwyV8WZeOWU3oJqWfIvL_bqyU0BXA";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/veo-2.0-generate-001:predict?key=${API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/veo-2.0-generate-001:predictLongRunning?key=${API_KEY}`;
 
   try {
+    const fullPrompt = `${promptText}, style: ${style}`;
+
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json' 
+      },
       body: JSON.stringify({
-        prompt: promptText + ", " + style,
-        aspect_ratio: "16:9"
+        instances: [
+          {
+            prompt: fullPrompt
+          }
+        ],
+        parameters: {
+          aspectRatio: aspectRatio,
+          sampleCount: 1
+        }
       })
     });
 
@@ -416,8 +428,9 @@ async function generateVideo() {
       result.innerHTML = `<p style="color:#ff5c5c;">⚠️ Error: ${data.error.message}</p>`;
     } else {
       result.innerHTML = `
-        <h3>✨ Video Request Sent!</h3>
-        <p style="color:#aaa;margin-top:10px;">Response received from API.</p>
+        <h3 style="color:#b995ff;">✨ Video Generation Started!</h3>
+        <p style="color:#aaa;margin-top:10px;">Operation Name: ${data.name || 'Request Processed'}</p>
+        <p style="color:#777;font-size:13px;margin-top:8px;">AI वीडियो बैकएंड में प्रोसेस हो रही है। कंसोल चेक करें।</p>
       `;
     }
   } catch (error) {
