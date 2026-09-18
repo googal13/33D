@@ -424,7 +424,7 @@ function generateContent() {
 </script>
 <script>
 async function generateVideo() {
-  const prompt taxt = document.getElementById('prompt').value;
+  const prompt text = document.getElementById('prompt').value;
   const API_KEY = AQ.Ab8RN6LMVyJUAI74OT9kWtwyV8WZeOWU3oJqWfIvL_bqyU0BXA;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/veo-2.0-generate-001:predict?key=${API_KEY}`;
 
@@ -432,7 +432,7 @@ async function generateVideo() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      prompt: prompt taxt,
+      prompt: prompt text,
       aspect_ratio: "16:9"
     })
   });
